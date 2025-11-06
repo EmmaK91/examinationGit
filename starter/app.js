@@ -8,6 +8,25 @@ const listEl = document.getElementById("todoList");
 const addBtn = document.getElementById("addBtn");
 const inputEl = document.getElementById("todoInput");
 
+// -------------------
+// LocalStorage funktioner 
+// -------------------
+function saveToLocal() {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+function loadFromLocal() {
+  const stored = localStorage.getItem("todos");
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    todos.splice(0, todos.length);
+    parsed.forEach(item => todos.push(item));
+  }
+}
+
+// -------------------
+// Rendera listan
+// -------------------
 function render() {
   listEl.innerHTML = "";
   todos.forEach((t, i) => {
@@ -20,17 +39,21 @@ function render() {
     const spacer = document.createElement("span");
     spacer.className = "spacer";
 
+    // Klar/Ångra-knapp
     const toggle = document.createElement("button");
     toggle.textContent = t.done ? "Ångra" : "Klar";
     toggle.onclick = () => {
       todos[i].done = !todos[i].done;
+      saveToLocal();  
       render();
     };
 
+    // Ta bort-knapp
     const del = document.createElement("button");
     del.textContent = "Ta bort";
     del.onclick = () => {
       todos.splice(i, 1);
+      saveToLocal();  
       render();
     };
 
@@ -39,17 +62,24 @@ function render() {
   });
 }
 
-// CONFLICT-SEED: Ändra den här hjälpfunktionen i två olika branches för att skapa en konflikt.
-function addTodo(text) {
-  todos.unshift({ text, done: false });
+// -------------------
+// Lägg till ny uppgift
+// -------------------
+function addTodoManual(text) {
+  todos.unshift({ text: text, done: false });
+  saveToLocal();  
+  render();
 }
 
 addBtn.addEventListener("click", () => {
   const val = inputEl.value.trim();
   if (!val) return;
-  addTodo(val);
+  addTodoManual(val);
   inputEl.value = "";
-  render();
 });
 
-render();
+// -------------------
+// Initiera sidan
+// -------------------
+loadFromLocal(); // Ladda todos från localStorage
+render();        // Visa dem på sidan
