@@ -63,7 +63,7 @@ function render() {
 }
 
 // -------------------
-// Lägg till ny uppgift
+// Lägg till ny uppgift med validering
 // -------------------
 function addTodoManual(text) {
   todos.unshift({ text: text, done: false });
@@ -73,7 +73,25 @@ function addTodoManual(text) {
 
 addBtn.addEventListener("click", () => {
   const val = inputEl.value.trim();
-  if (!val) return;
+
+  // Skapa felmeddelande-element om det inte finns
+  let errorEl = document.getElementById("errorMsg");
+  if (!errorEl) {
+    errorEl = document.createElement("span");
+    errorEl.id = "errorMsg";
+    errorEl.style.color = "red";
+    errorEl.style.marginLeft = "1rem";
+    listEl.parentNode.insertBefore(errorEl, listEl);
+  }
+
+  // Visa felmeddelande om input är tom
+  if (!val) {
+    errorEl.textContent = "Uppgift kan inte vara tom!";
+    return;
+  } else {
+    errorEl.textContent = "";
+  }
+
   addTodoManual(val);
   inputEl.value = "";
 });
