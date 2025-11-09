@@ -55,7 +55,7 @@ function render() {
 }
 
 function addTodoManual(text) {
-  todos.unshift({ text: text, done: false });
+  todos.unshift({ text, done: false }); // något annorlunda
   saveToLocal();
   render();
 }
