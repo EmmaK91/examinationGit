@@ -66,8 +66,8 @@ function render() {
 // Lägg till ny uppgift med validering
 // -------------------
 function addTodoManual(text) {
-  todos.unshift({ text: text, done: false });
-  saveToLocal();  
+  todos.push({ text: text, done: false });
+  saveToLocal();
   render();
 }
 
