@@ -8,9 +8,6 @@ const listEl = document.getElementById("todoList");
 const addBtn = document.getElementById("addBtn");
 const inputEl = document.getElementById("todoInput");
 
-// -------------------
-// LocalStorage funktioner 
-// -------------------
 function saveToLocal() {
   localStorage.setItem("todos", JSON.stringify(todos));
 }
@@ -24,9 +21,6 @@ function loadFromLocal() {
   }
 }
 
-// -------------------
-// Rendera listan
-// -------------------
 function render() {
   listEl.innerHTML = "";
   todos.forEach((t, i) => {
@@ -39,21 +33,19 @@ function render() {
     const spacer = document.createElement("span");
     spacer.className = "spacer";
 
-    // Klar/Ångra-knapp
     const toggle = document.createElement("button");
     toggle.textContent = t.done ? "Ångra" : "Klar";
     toggle.onclick = () => {
       todos[i].done = !todos[i].done;
-      saveToLocal();  
+      saveToLocal();
       render();
     };
 
-    // Ta bort-knapp
     const del = document.createElement("button");
     del.textContent = "Ta bort";
     del.onclick = () => {
       todos.splice(i, 1);
-      saveToLocal();  
+      saveToLocal();
       render();
     };
 
@@ -62,42 +54,43 @@ function render() {
   });
 }
 
-// -------------------
-// Lägg till ny uppgift med validering
-// -------------------
 function addTodoManual(text) {
   todos.unshift({ text, done: false }); // något annorlunda
   saveToLocal();
   render();
 }
 
+let errorEl = document.getElementById("errorMsg");
+
 addBtn.addEventListener("click", () => {
   const val = inputEl.value.trim();
 
-  // Skapa felmeddelande-element om det inte finns
-  let errorEl = document.getElementById("errorMsg");
-  if (!errorEl) {
-    errorEl = document.createElement("span");
-    errorEl.id = "errorMsg";
-    errorEl.style.color = "red";
-    errorEl.style.marginLeft = "1rem";
-    listEl.parentNode.insertBefore(errorEl, listEl);
+  if (!val) {
+    if (!errorEl) {
+      errorEl = document.createElement("span");
+      errorEl.id = "errorMsg";
+      errorEl.className = "error";
+      errorEl.textContent = "Du måste skriva något!";
+      inputEl.insertAdjacentElement("afterend", errorEl);
+    }
+    return;
   }
 
-  // Visa felmeddelande om input är tom
-  if (!val) {
-    errorEl.textContent = "Uppgift kan inte vara tom!";
-    return;
-  } else {
-    errorEl.textContent = "";
+  if (errorEl) {
+    errorEl.remove();
+    errorEl = null;
   }
 
   addTodoManual(val);
   inputEl.value = "";
 });
 
-// -------------------
-// Initiera sidan
-// -------------------
-loadFromLocal(); // Ladda todos från localStorage
-render();        // Visa dem på sidan
+inputEl.addEventListener("input", () => {
+  if (errorEl && inputEl.value.trim()) {
+    errorEl.remove();
+    errorEl = null;
+  }
+});
+
+loadFromLocal();
+render();
